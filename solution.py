@@ -9,7 +9,7 @@ def webServer(port=13331):
   #Prepare a server socket
   serverSocket.bind(("", port))
   #Fill in start
-
+  serverSocket.listen(1)
   #Fill in end
 
   while True:
@@ -20,15 +20,16 @@ def webServer(port=13331):
 
       try:
         message = connectionSocket.recv(1024)#Fill in start    #Fill in end
+        print(message,message.split()[0],message.split()[1])
         filename = message.split()[1]
         f = open(filename[1:])
-        outputdata = f.read()#Fill in start     #Fill in end
+        outputdata = f.read() #Fill in start
+        print outputdata#     #Fill in end
         
         #Send one HTTP header line into socket.
         #Fill in start
         connectionSocket.send('\nHTTP/1.1 200 OK\n\n')
         #Fill in end
-        connectionSocket.send(outputdata)
         #Send the content of the requested file to the client
         for i in range(0, len(outputdata)):
           connectionSocket.send(outputdata[i].encode())
@@ -38,20 +39,20 @@ def webServer(port=13331):
       except IOError:
         # Send response message for file not found (404)
         #Fill in start
-
-        #Fill in end
-
+        connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n')
+       #Fill in end
+        
 
         #Close client socket
         #Fill in start
-        connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n')
+        connectionSocket.close()
         #Fill in end
-        connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n')
+
     except (ConnectionResetError, BrokenPipeError):
       pass
 
   serverSocket.close()
-  sys.exit("404 Not Found")  # Terminate the program after sending the corresponding data
+  sys.exit()  # Terminate the program after sending the corresponding data
 
 if __name__ == "__main__":
   webServer(13331)
